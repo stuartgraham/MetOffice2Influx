@@ -71,7 +71,6 @@ def sort_json(working_data):
 
         # Construct payload and insert
         data_payload = [base_dict]
-        print('#'*30)   
         print("SUBMIT:" + str(data_payload))
         print('#'*30) 
         write_to_influx(data_payload)
