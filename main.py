@@ -77,7 +77,7 @@ def write_to_influx(data_payload):
     elif INFLUX_VERSION == 2:
         INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
 
-
+# Organises weather data from response and sends to Influx
 def organise_weather_data(working_data):
     # Interate over weather payload and pull out data points
     data_points = working_data["features"][0]["properties"]["timeSeries"]
