@@ -42,7 +42,7 @@ if INFLUX_VERSION == 99:
     from influxdb_client import InfluxDBClient
     from influxdb_client.client.write_api import SYNCHRONOUS
     INFLUX_CLIENT = InfluxDBClient(
-        host=INFLUX_HOST, port=INFLUX_HOST_PORT, database=INFLUX_DATABASE
+        url=f"http://{INFLUX_HOST}:{INFLUX_HOST_PORT}", database=INFLUX_DATABASE
         )
 
 JSON_OUTPUT = "output.json"
