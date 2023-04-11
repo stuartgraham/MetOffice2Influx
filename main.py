@@ -83,9 +83,9 @@ def organise_weather_data(working_data):
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
         # Cleans up for influxDB insert
-        base_dict = {"measurement": "met_weather", "tags": {"name": "met_weather"}}
+        data_payload = {"measurement": "met_weather", "tags": {"name": "met_weather"}}
         time_stamp = data_point["time"]
-        base_dict.update({"time": time_stamp})
+        data_payload.update({"time": time_stamp})
         del data_point["time"]
 
         # Make everything float to stop insert errors
@@ -93,10 +93,10 @@ def organise_weather_data(working_data):
             if type(v) == int:
                 data_point.update({k: float(v)})
 
-        base_dict.update({"fields": data_point})
+        data_payload.update({"fields": data_point})
 
         # Construct payload and insert
-        write_to_influx(base_dict)
+        write_to_influx(data_payload)
 
 
 def do_it():
