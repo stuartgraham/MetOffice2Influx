@@ -42,8 +42,9 @@ elif INFLUX_VERSION == 2:
 JSON_OUTPUT = "output.json"
 
 
-# Get saved json from MET
-def get_json(client_id, secret):
+# Grabs weather data from authenticate Met Office API
+# https://metoffice.apiconnect.ibmcloud.com/metoffice/production/
+def get_live_weather_data(client_id, secret):
     url = (
         "https://api-metoffice.apiconnect.ibmcloud.com/v0/forecasts/point/hourly"
         f"?excludeParameterMetadata=false&includeLocationName=true&latitude={LATITUDE}&longitude={LONGITUDE}"
@@ -53,15 +54,15 @@ def get_json(client_id, secret):
         "X-IBM-Client-Secret": secret,
         "accept": "application/json",
     }
-    resp = requests.get(url, headers=headers)
-    payload_data = resp.json()
+    response = requests.get(url, headers=headers)
+    payload_data = response.json()
     with open(JSON_OUTPUT, "w") as outfile:
         json.dump(payload_data, outfile)
 
 
-def get_saved_data(*args):
+def open_weather_data(*args):
     if LIVE_CONN == True:
-        get_json(API_CLIENT, API_SECRET)
+        get_live_weather_data(API_CLIENT, API_SECRET)
 
     with open(JSON_OUTPUT) as json_file:
         working_data = json.load(json_file)
@@ -76,7 +77,7 @@ def write_to_influx(data_payload):
         INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
 
 
-def sort_json(working_data):
+def organise_weather_data(working_data):
     # Interate over weather payload and pull out data points
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
@@ -98,8 +99,8 @@ def sort_json(working_data):
 
 
 def do_it():
-    working_data = get_saved_data()
-    sort_json(working_data)
+    working_data = open_weather_data()
+    organise_weather_data(working_data)
 
 
 def main():
