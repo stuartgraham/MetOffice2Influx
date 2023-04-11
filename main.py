@@ -1,7 +1,6 @@
 import json
 import os
 import time
-
 import requests
 import schedule
 from icecream import ic
@@ -14,9 +13,9 @@ API_SECRET = os.environ.get("API_SECRET", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
 INFLUX_DATABASE = os.environ.get("INFLUX_DATABASE","")
+INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN", "")
 INFLUX_ORG = os.environ.get("INFLUX_ORG", "")
-INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
 LATITUDE = os.environ.get("LATITUDE", "")
 LONGITUDE = os.environ.get("LONGITUDE", "")
 RUNMINS = int(os.environ.get("RUNMINS", 1))
@@ -38,6 +37,13 @@ elif INFLUX_VERSION == 2:
         url=f"http://{INFLUX_HOST}:{INFLUX_HOST_PORT}", org=INFLUX_ORG, token=INFLUX_TOKEN
         )
     INFLUX_WRITE_API = INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
+
+if INFLUX_VERSION == 99:
+    from influxdb_client import InfluxDBClient
+    from influxdb_client.client.write_api import SYNCHRONOUS
+    INFLUX_CLIENT = InfluxDBClient(
+        host=INFLUX_HOST, port=INFLUX_HOST_PORT, database=INFLUX_DATABASE
+        )
 
 JSON_OUTPUT = "output.json"
 
@@ -74,7 +80,7 @@ def load_weather_data():
 # Determines client type and formats write correctly
 def write_to_influx(data_payload):
     ic(data_payload)
-    if INFLUX_VERSION == 1:
+    if INFLUX_VERSION == 1 or INFLUX_VERSION == 99:
         response = INFLUX_CLIENT.write_points([data_payload]) 
         success = response
     elif INFLUX_VERSION == 2:
