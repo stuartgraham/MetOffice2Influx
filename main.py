@@ -69,7 +69,7 @@ def open_weather_data():
         working_data = json.load(json_file)
     return working_data
 
-
+# Determines client type and formats write correctly
 def write_to_influx(data_payload):
     ic(data_payload)
     if INFLUX_VERSION == 1:
