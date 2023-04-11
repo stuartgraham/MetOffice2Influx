@@ -73,7 +73,7 @@ def open_weather_data():
 def write_to_influx(data_payload):
     ic(data_payload)
     if INFLUX_VERSION == 1:
-        INFLUX_CLIENT.write_points(data_payload) 
+        INFLUX_CLIENT.write_points([data_payload]) 
     elif INFLUX_VERSION == 2:
         INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
 
