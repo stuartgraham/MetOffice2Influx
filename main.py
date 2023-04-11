@@ -44,10 +44,10 @@ JSON_OUTPUT = "output.json"
 
 # Grabs weather data from authenticate Met Office API
 # https://metoffice.apiconnect.ibmcloud.com/metoffice/production/
-def get_live_weather_data(client_id, secret):
+def get_live_weather_data(client_id, secret, latitude, longitude):
     url = (
         "https://api-metoffice.apiconnect.ibmcloud.com/v0/forecasts/point/hourly"
-        f"?excludeParameterMetadata=false&includeLocationName=true&latitude={LATITUDE}&longitude={LONGITUDE}"
+        f"?excludeParameterMetadata=false&includeLocationName=true&latitude={latitude}&longitude={longitude}"
     )
     headers = {
         "X-IBM-Client-Id": client_id,
@@ -64,7 +64,7 @@ def get_live_weather_data(client_id, secret):
 # Opens weather data from local file 
 def load_weather_data():
     if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
-        get_live_weather_data(API_CLIENT, API_SECRET)
+        get_live_weather_data(API_CLIENT, API_SECRET, LATITUDE, LONGITUDE)
 
     with open(JSON_OUTPUT) as json_file:
         working_data = json.load(json_file)
