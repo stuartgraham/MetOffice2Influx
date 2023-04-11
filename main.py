@@ -60,7 +60,7 @@ def get_live_weather_data(client_id, secret):
         json.dump(payload_data, outfile)
 
 
-def open_weather_data(*args):
+def open_weather_data():
     if LIVE_CONN == True:
         get_live_weather_data(API_CLIENT, API_SECRET)
 
