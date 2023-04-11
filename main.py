@@ -76,10 +76,14 @@ def write_to_influx(data_payload):
     ic(data_payload)
     if INFLUX_VERSION == 1:
         response = INFLUX_CLIENT.write_points([data_payload]) 
-        ic(response)
+        success = response
     elif INFLUX_VERSION == 2:
         response = INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
-        ic(response)
+        success = response is None  # In InfluxDB 2.x, a successful write returns None
+
+    if not success:
+        if LOGGING:
+            ic("Error writing to InfluxDB:", response)
 
 
 # Organises weather data from response and sends to Influx
