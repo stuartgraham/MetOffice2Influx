@@ -59,9 +59,10 @@ def get_live_weather_data(client_id, secret):
     with open(JSON_OUTPUT, "w") as outfile:
         json.dump(payload_data, outfile)
 
-
+# Verifies if we are using LIVE_CONN to spare API bombardment, or if no local json exists
+# Opens weather data from local file 
 def open_weather_data():
-    if LIVE_CONN == True:
+    if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
         get_live_weather_data(API_CLIENT, API_SECRET)
 
     with open(JSON_OUTPUT) as json_file:
