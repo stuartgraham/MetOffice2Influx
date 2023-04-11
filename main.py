@@ -104,7 +104,6 @@ def do_it():
 
 
 def main():
-    """Main entry point of the app"""
     do_it()
     schedule.every(RUNMINS).minutes.do(do_it)
 
@@ -112,7 +111,5 @@ def main():
         schedule.run_pending()
         time.sleep(1)
 
-
 if __name__ == "__main__":
-    """This is executed when run from the command line"""
     main()
