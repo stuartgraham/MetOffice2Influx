@@ -5,8 +5,6 @@ import time
 import requests
 import schedule
 from icecream import ic
-from influxdb_client import InfluxDBClient
-from influxdb_client.client.write_api import SYNCHRONOUS
 
 # GLOBALS
 INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
@@ -28,11 +26,14 @@ if not LOGGING:
     ic.disable()
 
 if INFLUX_VERSION == 1:
+    from influxdb import InfluxDBClient
     INFLUX_CLIENT = InfluxDBClient(
         host=INFLUX_HOST, port=INFLUX_HOST_PORT, database=INFLUX_DATABASE
         )
 
 elif INFLUX_VERSION == 2: 
+    from influxdb_client import InfluxDBClient
+    from influxdb_client.client.write_api import SYNCHRONOUS
     INFLUX_CLIENT = InfluxDBClient(
         url=f"http://{INFLUX_HOST}:{INFLUX_HOST_PORT}", org=INFLUX_ORG, token=INFLUX_TOKEN
         )

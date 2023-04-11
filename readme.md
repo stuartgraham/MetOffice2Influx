@@ -12,9 +12,9 @@ pip install -p requirements.txt
 python3 .\main.py
 ```
 
-### Docker Compose v1
+### Docker Compose - Influx v1.8 Support
 ```sh 
-weatherscraper:
+metoffice2influx:
   image: ghcr.io/stuartgraham/metoffice2influx:latest
   restart: always
   container_name: metoffice2influx
@@ -32,9 +32,9 @@ weatherscraper:
     - LOGGING=False
 ```
 
-### Docker Compose v2
+### Docker Compose - Influx v2 Support
 ```sh 
-weatherscraper:
+metoffice2influx:
   image: ghcr.io/stuartgraham/metoffice2influx:latest
   restart: always
   container_name: metoffice2influx
