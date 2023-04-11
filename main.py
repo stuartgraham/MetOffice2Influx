@@ -88,23 +88,25 @@ def write_to_influx(data_payload):
 
 # Organises weather data from response and sends to Influx
 def organise_weather_data(working_data):
-    # Interate over weather payload and pull out data points
+    # Iterate over weather payload and pull out data points
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
-        # Cleans up for influxDB insert
-        data_payload = {"measurement": "met_weather", "tags": {"name": "met_weather"}}
+        # Clean up for InfluxDB insert
         time_stamp = data_point["time"]
-        data_payload.update({"time": time_stamp})
         del data_point["time"]
 
-        # Make everything float to stop insert errors
+        # Make everything float to stop insert errors (original logic)
         for k, v in data_point.items():
             if type(v) == int:
                 data_point.update({k: float(v)})
 
-        data_payload.update({"fields": data_point})
-
         # Construct payload and insert
+        data_payload = {
+            "measurement": "met_weather",
+            "tags": {"name": "met_weather"},
+            "time": time_stamp,
+            "fields": data_point,
+        }
         write_to_influx(data_payload)
 
 
