@@ -59,15 +59,17 @@ def get_live_weather_data(client_id, secret):
     with open(JSON_OUTPUT, "w") as outfile:
         json.dump(payload_data, outfile)
 
+
 # Verifies if we are using LIVE_CONN to spare API bombardment, or if no local json exists
 # Opens weather data from local file 
-def open_weather_data():
+def load_weather_data():
     if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
         get_live_weather_data(API_CLIENT, API_SECRET)
 
     with open(JSON_OUTPUT) as json_file:
         working_data = json.load(json_file)
     return working_data
+
 
 # Determines client type and formats write correctly
 def write_to_influx(data_payload):
@@ -76,6 +78,7 @@ def write_to_influx(data_payload):
         INFLUX_CLIENT.write_points([data_payload]) 
     elif INFLUX_VERSION == 2:
         INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
+
 
 # Organises weather data from response and sends to Influx
 def organise_weather_data(working_data):
@@ -100,7 +103,7 @@ def organise_weather_data(working_data):
 
 
 def do_it():
-    working_data = open_weather_data()
+    working_data = load_weather_data()
     organise_weather_data(working_data)
 
 
