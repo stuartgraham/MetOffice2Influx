@@ -79,7 +79,7 @@ def write_to_influx(data_payload):
 
     if success:
         data_points = len(data_payload)
-        print("SUCCESS: {data_points} data points written to InfluxDB")
+        print(f"SUCCESS: {data_points} data points written to InfluxDB")
     else:
         print("ERROR:Error writing to InfluxDB:", response)
 
@@ -103,7 +103,7 @@ def organise_weather_data(working_data):
 
         # Construct a Point object and append to the batch
         point = Point("met_weather").tag("name", "met_weather").time(time_stamp)
-        ic(point)
+        print(point)
 
         # Add fields to the point
         for k, v in data_point.items():
