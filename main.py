@@ -74,8 +74,11 @@ def load_weather_data():
 
 # Determines client type and formats write correctly
 def write_to_influx(data_payload):
+    ic(data_payload)
     response = INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
+    ic(response)
     success = response is None  # In InfluxDB 2.x, a successful write returns None
+    ic(success)
 
     if success:
         print(f"SUCCESS: data points written to InfluxDB")
