@@ -78,6 +78,7 @@ def write_to_influx(data_payload):
     success = response is None  # In InfluxDB 2.x, a successful write returns None
 
     if success:
+        print(f"SUCCESS: data points written to InfluxDB")
         data_points = len(data_payload)
         print(f"SUCCESS: {data_points} data points written to InfluxDB")
     else:
@@ -109,7 +110,6 @@ def organise_weather_data(working_data):
         for k, v in data_point.items():
             point = point.field(k, v)
         
-        print(point)
         data_points_batch.append(point)
 
     # Write the batch to InfluxDB
