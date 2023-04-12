@@ -74,7 +74,6 @@ def load_weather_data():
 
 # Determines client type and formats write correctly
 def write_to_influx(data_payload):
-    ic(data_payload)
     response = INFLUX_WRITE_API.write(INFLUX_BUCKET, INFLUX_ORG, data_payload)
     success = response is None  # In InfluxDB 2.x, a successful write returns None
 
@@ -103,6 +102,7 @@ def organise_weather_data(working_data):
 
         # Construct a Point object and append to the batch
         point = Point("met_weather").tag("name", "met_weather").time(time_stamp)
+        ic(point)
 
         # Add fields to the point
         for k, v in data_point.items():
