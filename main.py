@@ -5,7 +5,7 @@ import requests
 import schedule
 from icecream import ic
 from influxdb_client import InfluxDBClient, Point
-from influxdb_client.client.write_api import SYNCHRONOUS, WriteOptions
+from influxdb_client.client.write_api import WriteOptions
 
 # GLOBALS
 INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
