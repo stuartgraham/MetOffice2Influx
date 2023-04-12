@@ -4,8 +4,8 @@ import time
 import requests
 import schedule
 from icecream import ic
-from influxdb_client import InfluxDBClient
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client import InfluxDBClient, Point
+from influxdb_client.client.write_api import SYNCHRONOUS, WriteOptions
 
 # GLOBALS
 INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
@@ -31,11 +31,14 @@ if not LOGGING:
 if INFLUX_VERSION == 1:
     INFLUX_BUCKET = f"{INFLUX_DATABASE}/autogen"
 
+# Set up batch write options
+BATCH_WRITE_OPTIONS = WriteOptions(batch_size=500, flush_interval=10_000, jitter_interval=2_000, retry_interval=5_000)
+
 # Instantiate Influx Client
 INFLUX_CLIENT = InfluxDBClient(
     url=f"http://{INFLUX_HOST}:{INFLUX_HOST_PORT}", org=INFLUX_ORG, token=INFLUX_TOKEN
     )
-INFLUX_WRITE_API = INFLUX_CLIENT.write_api(write_options=SYNCHRONOUS)
+INFLUX_WRITE_API = INFLUX_CLIENT.write_api(write_options=BATCH_WRITE_OPTIONS)
 
 JSON_OUTPUT = "output.json"
 
@@ -81,8 +84,11 @@ def write_to_influx(data_payload):
         ic("ERROR:Error writing to InfluxDB:", response)
 
 
-# Organises weather data from response and sends to Influx
+# Organises weather data from response and sends to Influx in batch
 def organise_weather_data(working_data):
+    # Create an array to hold the data points
+    data_points_batch = []
+
     # Iterate over weather payload and pull out data points
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
@@ -95,14 +101,12 @@ def organise_weather_data(working_data):
             if type(v) == int:
                 data_point.update({k: float(v)})
 
-        # Construct payload and insert
-        data_payload = {
-            "measurement": "met_weather",
-            "tags": {"name": "met_weather"},
-            "time": time_stamp,
-            "fields": data_point,
-        }
-        write_to_influx(data_payload)
+        # Construct a Point object and append to the batch
+        point = Point("met_weather").tag("name", "met_weather").time(time_stamp).fields(data_point)
+        data_points_batch.append(point)
+
+    # Write the batch to InfluxDB
+    write_to_influx(data_points_batch)
 
 
 def do_it():
