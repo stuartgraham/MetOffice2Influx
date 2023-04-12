@@ -102,7 +102,12 @@ def organise_weather_data(working_data):
                 data_point.update({k: float(v)})
 
         # Construct a Point object and append to the batch
-        point = Point("met_weather").tag("name", "met_weather").time(time_stamp).fields(data_point)
+        point = Point("met_weather").tag("name", "met_weather").time(time_stamp)
+
+        # Add fields to the point
+        for k, v in data_point.items():
+            point = point.field(k, v)
+
         data_points_batch.append(point)
 
     # Write the batch to InfluxDB
