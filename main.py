@@ -80,9 +80,10 @@ def write_to_influx(data_payload):
 
     if success:
         data_points = len(data_payload)
-        ic(f"SUCCESS: {data_points} data points written to InfluxDB")
+        ic(data_points)
+        print(f"SUCCESS: {data_points} data points written to InfluxDB")
     else:
-        ic(f"ERROR: Error writing to InfluxDB: {response}")
+        print(f"ERROR: Error writing to InfluxDB: {response}")
 
 
 # Organises weather data from response and sends to Influx in batch
