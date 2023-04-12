@@ -96,19 +96,20 @@ def organise_weather_data(working_data):
         time_stamp = data_point["time"]
         del data_point["time"]
 
-        # Make everything float to stop insert errors (original logic)
+        # Make everything float to stop insert errors
         for k, v in data_point.items():
             if type(v) == int:
                 data_point.update({k: float(v)})
 
         # Construct a Point object and append to the batch
         point = Point("met_weather").tag("name", "met_weather").time(time_stamp)
-        print(point)
+
 
         # Add fields to the point
         for k, v in data_point.items():
             point = point.field(k, v)
-
+        
+        print(point)
         data_points_batch.append(point)
 
     # Write the batch to InfluxDB
