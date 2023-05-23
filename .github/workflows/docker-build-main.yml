@@ -30,10 +30,19 @@ jobs:
         echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} \
         --username "${DOCKER_USERNAME}" --password-stdin
 
-    - name: Run Buildx (push image)
+    - name: Container build for amd64
       run: |
         docker buildx build \
-        --platform ${DOCKER_TARGET_PLATFORM} \
+        --platform linux/amd64 \
+        --tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${GITHUB_RUN_NUMBER} \
+        --tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest  \
+        --file ./Dockerfile \
+        --output type=image,push=true .
+
+    - name: Container build for arm64
+      run: |
+        docker buildx build \
+        --platform linux/arm64 \
         --tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:${GITHUB_RUN_NUMBER} \
         --tag ${DOCKER_REGISTRY}/${DOCKER_IMAGE}:latest  \
         --file ./Dockerfile \
