@@ -10,8 +10,7 @@ from influxdb_client.client.write_api import WriteOptions
 # GLOBALS
 INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
 LIVE_CONN = bool(os.environ.get("LIVE_CONN", ""))
-API_CLIENT = os.environ.get("API_CLIENT", "")
-API_SECRET = os.environ.get("API_SECRET", "")
+API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
 INFLUX_DATABASE = os.environ.get("INFLUX_DATABASE","")
@@ -44,15 +43,14 @@ JSON_OUTPUT = "output.json"
 
 
 # Grabs weather data from authenticate Met Office API
-# https://metoffice.apiconnect.ibmcloud.com/metoffice/production/
-def get_live_weather_data(client_id, secret, latitude, longitude):
+# https://datahub.metoffice.gov.uk/docs/getting-started
+def get_live_weather_data(api_key, latitude, longitude):
     url = (
-        "https://api-metoffice.apiconnect.ibmcloud.com/v0/forecasts/point/hourly"
+        "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly"
         f"?excludeParameterMetadata=false&includeLocationName=true&latitude={latitude}&longitude={longitude}"
     )
     headers = {
-        "X-IBM-Client-Id": client_id,
-        "X-IBM-Client-Secret": secret,
+        "apikey": api_key,
         "accept": "application/json",
     }
     response = requests.get(url, headers=headers)
@@ -65,7 +63,7 @@ def get_live_weather_data(client_id, secret, latitude, longitude):
 # Opens weather data from local file 
 def load_weather_data():
     if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
-        get_live_weather_data(API_CLIENT, API_SECRET, LATITUDE, LONGITUDE)
+        get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
 
     with open(JSON_OUTPUT) as json_file:
         working_data = json.load(json_file)
