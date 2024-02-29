@@ -13,7 +13,6 @@ LIVE_CONN = bool(os.environ.get("LIVE_CONN", ""))
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
-INFLUX_DATABASE = os.environ.get("INFLUX_DATABASE","")
 INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN", "")
 INFLUX_ORG = os.environ.get("INFLUX_ORG", "-")
@@ -25,10 +24,6 @@ LOGGING = bool(os.environ.get("LOGGING", False))
 # Logging
 if not LOGGING:
     ic.disable()
-
-# Creates a bucket for backward compat
-if INFLUX_VERSION == 1:
-    INFLUX_BUCKET = f"{INFLUX_DATABASE}/autogen"
 
 # Set up batch write options
 BATCH_WRITE_OPTIONS = WriteOptions(batch_size=500, flush_interval=10_000, jitter_interval=2_000, retry_interval=5_000)
