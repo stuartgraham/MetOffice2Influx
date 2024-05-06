@@ -41,7 +41,12 @@ def get_live_weather_data(api_key, latitude, longitude):
         "apikey": api_key,
         "accept": "application/json",
     }
-    response = requests.get(url, headers=headers)
+    try:
+        response = requests.get(url, headers=headers)
+    except requests.exceptions.RequestException as e:
+        print(e)
+        raise SystemExit(e)
+
     payload_data = response.json()
     with open(JSON_OUTPUT, "w") as outfile:
         json.dump(payload_data, outfile)
