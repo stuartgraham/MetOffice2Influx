@@ -49,6 +49,7 @@ def get_live_weather_data(api_key, latitude, longitude):
 
     payload_data = response.json()
     with open(JSON_OUTPUT, "w") as outfile:
+        print(payload_data)
         json.dump(payload_data, outfile)
 
 
