@@ -57,7 +57,10 @@ def get_live_weather_data(api_key, latitude, longitude):
 # Opens weather data from local file 
 def load_weather_data():
     if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
-        get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
+        try:
+            get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
+        except Exception as e:
+            print(f"LIVE_DATA_ERROR: Unable to get live weather data. Exception: {e}")
 
     with open(JSON_OUTPUT) as json_file:
         working_data = json.load(json_file)
@@ -115,6 +118,7 @@ def organise_weather_data(working_data):
 
 def do_it():
     working_data = load_weather_data()
+
     organise_weather_data(working_data)
 
 
