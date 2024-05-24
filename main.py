@@ -90,7 +90,11 @@ def organise_weather_data(working_data):
     # Create an array to hold the data points
     data_points_batch = []
 
-    # Iterate over weather payload and pull out data points
+    # Iterate over weather payload and pull out data points    
+    if not working_data["features"][0]["properties"]["timeSeries"]:
+        print("DATAPOINTEERROR: No data points found")
+        return
+
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
         # Clean up for InfluxDB insert
