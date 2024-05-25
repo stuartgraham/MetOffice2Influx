@@ -102,11 +102,13 @@ def qualify_data(working_data):
         time.sleep(sleep_time)
         return False
     
-    # Check for valid weather data
-    if not working_data["features"][0]["properties"]["timeSeries"]:
-        print("PAYLOAD_ERROR: No data points found")
-        print(working_data)
-        return False
+    # Check for valid weather data    
+    if "features" in working_data and working_data["features"]:
+        if "properties" in working_data["features"][0] and "timeSeries" in working_data["features"][0]["properties"]:
+            if not working_data["features"][0]["properties"]["timeSeries"]:
+                print("PAYLOAD_ERROR: No data points found")
+                print(working_data)
+                return False
 
     print("PAYLOAD_VALID: Payload is validate")
     return True
