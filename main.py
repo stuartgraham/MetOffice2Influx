@@ -116,16 +116,21 @@ def qualify_data(working_data):
 # Calculate the time to sleep
 def calculate_sleep_time(sleep_datetime):
     try:
-        now = pendulum.now("Europe/London")
         sleep_datetime = pendulum.parse(sleep_datetime, strict=False)
-        diff = sleep_datetime.diff(now).in_seconds()
+
     except Exception as e:
         print(f"TIME_PARSE_ERROR: Could parse retry time. Exception: {e}")
         return 300
+    
+    now = pendulum.now("Europe/London")
+    diff = sleep_datetime.diff(now).in_seconds()
+
     # return 0 if negative
     if diff < 0:
+        print("TIME_DELTA: Less than zero")
         return 0
     else:
+        print(f"TIME_DELTA: set to {diff}")
         return diff
 
 
