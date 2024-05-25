@@ -4,7 +4,7 @@ import time
 import requests
 import schedule
 import pendulum
-import datetime
+from datetime import datetime
 from pprint import pprint
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
