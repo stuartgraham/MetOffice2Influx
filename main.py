@@ -1,4 +1,3 @@
-import json
 import os
 import time
 import requests
@@ -11,7 +10,6 @@ from urllib3 import Retry
 
 # GLOBALS
 INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
-LIVE_CONN = bool(os.environ.get("LIVE_CONN", ""))
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
@@ -27,12 +25,12 @@ LOGGING = bool(os.environ.get("LOGGING", False))
 if not LOGGING:
     ic.disable()
 
-JSON_OUTPUT = "output.json"
-
 
 # Grabs weather data from authenticate Met Office API
 # https://datahub.metoffice.gov.uk/docs/getting-started
 def get_live_weather_data(api_key, latitude, longitude):
+    return_data = {}
+    
     url = (
         "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly"
         f"?excludeParameterMetadata=false&includeLocationName=true&latitude={latitude}&longitude={longitude}"
@@ -44,27 +42,12 @@ def get_live_weather_data(api_key, latitude, longitude):
     try:
         response = requests.get(url, headers=headers)
     except requests.exceptions.RequestException as e:
-        print(e)
-        raise SystemExit(e)
-
-    payload_data = response.json()
-    with open(JSON_OUTPUT, "w") as outfile:
-        print(payload_data)
-        json.dump(payload_data, outfile)
-
-
-# Verifies if we are using LIVE_CONN to spare API bombardment, or if no local json exists
-# Opens weather data from local file 
-def load_weather_data():
-    if LIVE_CONN or not os.path.exists(JSON_OUTPUT):
-        try:
-            get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
-        except Exception as e:
-            print(f"LIVE_DATA_ERROR: Unable to get live weather data. Exception: {e}")
-
-    with open(JSON_OUTPUT) as json_file:
-        working_data = json.load(json_file)
-    return working_data
+        print(f"EXCEPTION: {e}")
+        return return_data
+    
+    return_data = response.json()
+    
+    return return_data
 
 
 def write_to_influx(data_payload):
@@ -90,11 +73,6 @@ def organise_weather_data(working_data):
     # Create an array to hold the data points
     data_points_batch = []
 
-    # Iterate over weather payload and pull out data points    
-    if not working_data["features"][0]["properties"]["timeSeries"]:
-        print("DATAPOINTEERROR: No data points found")
-        return
-
     data_points = working_data["features"][0]["properties"]["timeSeries"]
     for data_point in data_points:
         # Clean up for InfluxDB insert
@@ -109,7 +87,6 @@ def organise_weather_data(working_data):
         # Construct a Point object and append to the batch
         point = Point("met_weather").tag("name", "met_weather").time(time_stamp)
 
-
         # Add fields to the point
         for k, v in data_point.items():
             point = point.field(k, v)
@@ -120,10 +97,31 @@ def organise_weather_data(working_data):
     write_to_influx(data_points_batch)
 
 
-def do_it():
-    working_data = load_weather_data()
+def qualify_data(working_data):
+    # Check for API throttle error
+    if working_data["message"] == "Message throttled out":
+        print("PAYLOAD_ERROR: API throttle error")
+        print(working_data)
+        return False
+    
+    # Check for valid weather data
+    if not working_data["features"][0]["properties"]["timeSeries"]:
+        print("PAYLOAD_ERROR: No data points found")
+        print(working_data)
+        return False
 
-    organise_weather_data(working_data)
+    print("PAYLOAD_VALID: Payload is validate")
+    return True
+
+
+def do_it():
+    working_data = get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
+    continue_processing = qualify_data(working_data)
+    if not continue_processing:
+        time.sleep(3600)
+        return False
+    else:
+        organise_weather_data(working_data)
 
 
 def main():
