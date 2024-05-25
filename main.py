@@ -4,6 +4,7 @@ import time
 import requests
 import schedule
 import pendulum
+import datetime
 from pprint import pprint
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -115,12 +116,15 @@ def qualify_data(working_data):
 
 # Calculate the time to sleep
 def calculate_sleep_time(sleep_datetime):
-    # try:
-    sleep_datetime = pendulum.parse(sleep_datetime, strict=False)
+    try:
+        # Define the format of the input string
+        date_format = "%Y-%b-%d %H:%M:%S%z %Z"
+        date_obj = datetime.strptime(sleep_datetime, date_format)
+        sleep_datetime = pendulum.instance(date_obj)
 
-    # except Exception as e:
-    #     print(f"TIME_PARSE_ERROR: Could parse retry time. Exception: {e}")
-    #     return 300
+    except Exception as e:
+        print(f"TIME_PARSE_ERROR: Could parse retry time. Exception: {e}")
+        return 300
     
     now = pendulum.now("Europe/London")
     diff = sleep_datetime.diff(now).in_seconds()
