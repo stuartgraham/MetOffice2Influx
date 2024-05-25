@@ -38,11 +38,11 @@ def get_live_weather_data(api_key, latitude, longitude):
 
     with requests.get(url, headers=headers) as response:
         if response.status_code == 200:
-            return_data = response.json()
+            print(f"API_HTTP_SUCCESS: Connected to Met Office API successfully")
         else:
             print(f"API_HTTP_ERROR: {response.status_code}")
 
-    return return_data
+    return response.json()
 
 # Writes data to InfluxDB
 def write_to_influx(data_payload):
