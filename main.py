@@ -94,7 +94,7 @@ def organise_weather_data(working_data):
 # Check the payload for errors
 def qualify_data(working_data):
     # Check for API throttle error
-    if working_data["message"] == "Message throttled out":
+    if "Message throttled out" in working_data:
         print("PAYLOAD_ERROR: API throttle error")
         print(working_data)
         sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
