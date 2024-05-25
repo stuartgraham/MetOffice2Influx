@@ -1,3 +1,4 @@
+
 import os
 import time
 import requests
@@ -33,15 +34,13 @@ def get_live_weather_data(api_key, latitude, longitude):
         "apikey": api_key,
         "accept": "application/json",
     }
-    try:
-        response = requests.get(url, headers=headers)
-    except requests.exceptions.RequestException as e:
-        print(f"EXCEPTION: {e}")
-        return return_data
-    
-    return_data = response.json()
-    
-    return return_data
+
+    with requests.get(url, headers=headers) as response:
+        if response.status_code == 200:
+            return response.json()
+        else:
+            print(f"EXCEPTION: HTTP {response.status_code}")
+            return return_data
 
 
 # Writes data to InfluxDB
