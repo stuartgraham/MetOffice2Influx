@@ -95,7 +95,7 @@ def organise_weather_data(working_data):
 # Check the payload for errors
 def qualify_data(working_data):
     # Check for API throttle error
-    if "Message throttled out" in working_data:
+    if working_data.get('message') == 'Message throttled out':
         print("PAYLOAD_ERROR: API throttle error")
         print(working_data)
         sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
@@ -103,16 +103,14 @@ def qualify_data(working_data):
         time.sleep(sleep_time)
         return False
     
-    # Check for valid weather data    
-    if "features" in working_data and working_data["features"]:
-        if "properties" in working_data["features"][0] and "timeSeries" in working_data["features"][0]["properties"]:
-            if not working_data["features"][0]["properties"]["timeSeries"]:
-                print("PAYLOAD_ERROR: No data points found")
-                print(working_data)
-                return False
-
-    print("PAYLOAD_VALID: Payload is validate")
-    return True
+    # Check for valid weather data
+    if working_data.get(["features"][0]["properties"]["timeSeries"]) == None:
+        print("PAYLOAD_ERROR: No data points found")
+        print(working_data)
+        return False
+    else:
+        print("PAYLOAD_VALID: Payload is validate")
+        return True
 
 
 # Calculate the time to sleep
