@@ -19,6 +19,7 @@ LATITUDE = os.environ.get("LATITUDE", "")
 LONGITUDE = os.environ.get("LONGITUDE", "")
 RUNMINS = int(os.environ.get("RUNMINS", 1))
 
+
 # Grabs weather data from authenticate Met Office API
 # https://datahub.metoffice.gov.uk/docs/getting-started
 def get_live_weather_data(api_key, latitude, longitude):
@@ -43,6 +44,7 @@ def get_live_weather_data(api_key, latitude, longitude):
     return return_data
 
 
+# Writes data to InfluxDB
 def write_to_influx(data_payload):
     time.sleep(1)
     print("SUBMIT:" + str(data_payload))
@@ -90,6 +92,7 @@ def organise_weather_data(working_data):
     write_to_influx(data_points_batch)
 
 
+# Check the payload for errors
 def qualify_data(working_data):
     # Check for API throttle error
     if working_data["message"] == "Message throttled out":
@@ -109,8 +112,9 @@ def qualify_data(working_data):
     print("PAYLOAD_VALID: Payload is validate")
     return True
 
+
+# Calculate the time to sleep
 def calculate_sleep_time(sleep_datetime):
-    # Calculate sleep time
     now = pendulum.now()
     sleep_datetime = pendulum.parse(sleep_datetime)
     diff = sleep_datetime.diff(now).in_seconds()
@@ -121,6 +125,7 @@ def calculate_sleep_time(sleep_datetime):
         return diff
 
 
+# Main function to run
 def do_it():
     working_data = get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
     continue_processing = qualify_data(working_data)
