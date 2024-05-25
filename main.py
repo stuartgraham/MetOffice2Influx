@@ -3,29 +3,21 @@ import time
 import requests
 import schedule
 import pendulum
-from icecream import ic
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.client.exceptions import InfluxDBError
 from urllib3 import Retry
 
 # GLOBALS
-INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
-INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")``
+INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN", "")
 INFLUX_ORG = os.environ.get("INFLUX_ORG", "-")
 LATITUDE = os.environ.get("LATITUDE", "")
 LONGITUDE = os.environ.get("LONGITUDE", "")
 RUNMINS = int(os.environ.get("RUNMINS", 1))
-LOGGING = bool(os.environ.get("LOGGING", False))
-
-# Logging
-if not LOGGING:
-    ic.disable()
-
 
 # Grabs weather data from authenticate Met Office API
 # https://datahub.metoffice.gov.uk/docs/getting-started
