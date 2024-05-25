@@ -116,7 +116,7 @@ def qualify_data(working_data):
 # Calculate the time to sleep
 def calculate_sleep_time(sleep_datetime):
     try:
-        now = pendulum.now()
+        now = pendulum.now("Europe/London")
         sleep_datetime = pendulum.parse(sleep_datetime, format="YYYY-MMMM-D HH:mm:ss Z")
         diff = sleep_datetime.diff(now).in_seconds()
     except Exception as e:
