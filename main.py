@@ -37,11 +37,11 @@ def get_live_weather_data(api_key, latitude, longitude):
 
     with requests.get(url, headers=headers) as response:
         if response.status_code == 200:
-            return response.json()
+            return_data = response.json()
         else:
-            print(f"EXCEPTION: HTTP {response.status_code}")
-            return return_data
+            print(f"API_HTTP_ERROR: {response.status_code}")
 
+    return return_data
 
 # Writes data to InfluxDB
 def write_to_influx(data_payload):
