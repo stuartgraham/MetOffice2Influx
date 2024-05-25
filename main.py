@@ -2,6 +2,7 @@ import os
 import time
 import requests
 import schedule
+import pendulum
 from icecream import ic
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -13,7 +14,7 @@ INFLUX_VERSION = int(os.environ.get("INFLUX_VERSION", 2))
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
-INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
+INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")``
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN", "")
 INFLUX_ORG = os.environ.get("INFLUX_ORG", "-")
 LATITUDE = os.environ.get("LATITUDE", "")
@@ -102,6 +103,9 @@ def qualify_data(working_data):
     if working_data["message"] == "Message throttled out":
         print("PAYLOAD_ERROR: API throttle error")
         print(working_data)
+        sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
+        print(f"API_BACKOFF: Sleeping for {sleep_time} seconds")
+        time.sleep(sleep_time)
         return False
     
     # Check for valid weather data
@@ -113,12 +117,22 @@ def qualify_data(working_data):
     print("PAYLOAD_VALID: Payload is validate")
     return True
 
+def calculate_sleep_time(sleep_datetime):
+    # Calculate sleep time
+    now = pendulum.now()
+    sleep_datetime = pendulum.parse(sleep_datetime)
+    diff = sleep_datetime.diff(now).in_seconds()
+    # return 0 if negative
+    if diff < 0:
+        return 0
+    else:
+        return diff
+
 
 def do_it():
     working_data = get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
     continue_processing = qualify_data(working_data)
     if not continue_processing:
-        time.sleep(3600)
         return False
     else:
         organise_weather_data(working_data)
