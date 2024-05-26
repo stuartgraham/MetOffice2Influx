@@ -39,7 +39,8 @@ def get_live_weather_data(api_key, latitude, longitude):
         if response.status_code == 200:
             ic(f"API_HTTP_SUCCESS: Connected to Met Office API successfully")
         else:
-            ic(f"API_HTTP_ERROR: {response.status_code}")
+            response_code = response.status_code
+            ic(f"API_HTTP_ERROR: {response_code}")
 
     return response.json()
 
