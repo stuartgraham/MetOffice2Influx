@@ -6,7 +6,7 @@ import schedule
 import pendulum
 from icecream import ic
 from datetime import datetime
-from influxdb_client import InfluxDBClient
+from influxdb_client import InfluxDBClient, Point
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.client.exceptions import InfluxDBError
 from urllib3 import Retry

@@ -1,3 +1,6 @@
 .env
 gitclean.bat
 output.json
+Pipfile*
+sample-data.json
+test.py
