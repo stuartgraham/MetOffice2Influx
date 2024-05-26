@@ -4,7 +4,7 @@ import time
 import requests
 import schedule
 import pendulum
-import icecream as ic
+from icecream import ic
 from datetime import datetime
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
