@@ -51,6 +51,7 @@ def get_live_weather_data(api_key, latitude, longitude):
     ic(response.json())
     return response.json()
 
+
 # Writes data to InfluxDB
 def write_to_influx(data_payload):
     time.sleep(1)
