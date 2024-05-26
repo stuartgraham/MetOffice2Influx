@@ -4,6 +4,7 @@ import time
 import requests
 import schedule
 import pendulum
+import icecream as ic
 from datetime import datetime
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
@@ -25,8 +26,6 @@ RUNMINS = int(os.environ.get("RUNMINS", 1))
 # Grabs weather data from authenticate Met Office API
 # https://datahub.metoffice.gov.uk/docs/getting-started
 def get_live_weather_data(api_key, latitude, longitude):
-    return_data = {}
-    
     url = (
         "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly"
         f"?excludeParameterMetadata=false&includeLocationName=true&latitude={latitude}&longitude={longitude}"
@@ -38,16 +37,16 @@ def get_live_weather_data(api_key, latitude, longitude):
 
     with requests.get(url, headers=headers) as response:
         if response.status_code == 200:
-            print(f"API_HTTP_SUCCESS: Connected to Met Office API successfully")
+            ic(f"API_HTTP_SUCCESS: Connected to Met Office API successfully")
         else:
-            print(f"API_HTTP_ERROR: {response.status_code}")
+            ic(f"API_HTTP_ERROR: {response.status_code}")
 
     return response.json()
 
 # Writes data to InfluxDB
 def write_to_influx(data_payload):
     time.sleep(1)
-    print("SUBMIT:" + str(data_payload))
+    ic("SUBMIT:" + str(data_payload))
     retries = Retry(connect=5, read=2, redirect=5)
     with InfluxDBClient(f"http://{INFLUX_HOST}:{INFLUX_HOST_PORT}", org=INFLUX_ORG, token=INFLUX_TOKEN, retries=retries) as client:
         try:
@@ -58,8 +57,8 @@ def write_to_influx(data_payload):
             raise
         
     data_points = len(data_payload)
-    print(f"SUCCESS: {data_points} data points written to InfluxDB")
-    print('#'*30)
+    ic(f"SUCCESS: {data_points} data points written to InfluxDB")
+    ic('#'*30)
     client.close()
 
 
@@ -96,20 +95,20 @@ def organise_weather_data(working_data):
 def qualify_data(working_data):
     # Check for API throttle error
     if working_data.get('message') == 'Message throttled out':
-        print("PAYLOAD_ERROR: API throttle error")
-        print(working_data)
+        ic("PAYLOAD_ERROR: API throttle error")
+        ic(working_data)
         sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
-        print(f"API_BACKOFF: Sleeping for {sleep_time} seconds")
+        ic(f"API_BACKOFF: Sleeping for {sleep_time} seconds")
         time.sleep(sleep_time)
         return False
     
     # Check for valid weather data
     if working_data.get(["features"][0]["properties"]["timeSeries"]) == None:
-        print("PAYLOAD_ERROR: No data points found")
-        print(working_data)
+        ic("PAYLOAD_ERROR: No data points found")
+        ic(working_data)
         return False
     else:
-        print("PAYLOAD_VALID: Payload is validate")
+        ic("PAYLOAD_VALID: Payload is validate")
         return True
 
 
@@ -122,7 +121,7 @@ def calculate_sleep_time(sleep_datetime):
         sleep_datetime = pendulum.instance(date_obj)
 
     except Exception as e:
-        print(f"TIME_PARSE_ERROR: Could parse retry time. Exception: {e}")
+        ic(f"TIME_PARSE_ERROR: Could parse retry time. Exception: {e}")
         return 300
     
     now = pendulum.now("Europe/London")
@@ -130,10 +129,10 @@ def calculate_sleep_time(sleep_datetime):
 
     # return 0 if negative
     if diff < 0:
-        print("TIME_DELTA: Less than zero")
+        ic("TIME_DELTA: Less than zero")
         return 0
     else:
-        print(f"TIME_DELTA: set to {diff}")
+        ic(f"TIME_DELTA: set to {diff}")
         return diff
 
 
