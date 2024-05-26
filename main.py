@@ -5,7 +5,6 @@ import requests
 import schedule
 import pendulum
 from datetime import datetime
-from pprint import pprint
 from influxdb_client import InfluxDBClient
 from influxdb_client.client.write_api import SYNCHRONOUS
 from influxdb_client.client.exceptions import InfluxDBError
@@ -141,7 +140,6 @@ def calculate_sleep_time(sleep_datetime):
 # Main function to run
 def do_it():
     working_data = get_live_weather_data(API_KEY, LATITUDE, LONGITUDE)
-    pprint(working_data)
     continue_processing = qualify_data(working_data)
     if not continue_processing:
         return False
@@ -159,4 +157,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-  
