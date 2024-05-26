@@ -22,6 +22,12 @@ LATITUDE = os.environ.get("LATITUDE", "")
 LONGITUDE = os.environ.get("LONGITUDE", "")
 RUNMINS = int(os.environ.get("RUNMINS", 1))
 
+# Configure Icecream
+def time_format():
+    return f'{pendulum.now('Europe/London').to_datetime_string()}|>'
+
+ic.configureOutput(prefix=time_format)
+
 
 # Grabs weather data from authenticate Met Office API
 # https://datahub.metoffice.gov.uk/docs/getting-started
@@ -39,9 +45,9 @@ def get_live_weather_data(api_key, latitude, longitude):
         response_code = response.status_code
         ic(response_code)
         if response.status_code == 200:
-            print(f"API_HTTP_SUCCESS: Connected to Met Office API successfully")
+            ic("API_HTTP_SUCCESS: Connected to Met Office API successfully")
         else:
-            print(f"API_HTTP_ERROR: {response_code}")
+            ic("API_HTTP_ERROR: Unable to connect to API")
 
     ic(response.json())
     return response.json()
