@@ -24,7 +24,7 @@ RUNMINS = int(os.environ.get("RUNMINS", 1))
 
 # Configure Icecream
 def time_format():
-    return f'{pendulum.now('Europe/London').to_datetime_string()}|>'
+    return f'{pendulum.now('Europe/London').to_datetime_string()} |> '
 ic.configureOutput(prefix=time_format)
 
 
