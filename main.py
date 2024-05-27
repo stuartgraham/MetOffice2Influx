@@ -24,7 +24,7 @@ RUNMINS = int(os.environ.get("RUNMINS", 1))
 
 # Configure Icecream
 def time_format():
-    return f'{pendulum.now('Europe/London').to_datetime_string()} |> '
+    return f'{pendulum.now("Europe/London").to_datetime_string()} |> '
 ic.configureOutput(prefix=time_format)
 
 
@@ -72,7 +72,7 @@ def write_to_influx(data_payload):
 
 
 # Organises weather data from response and sends to Influx in batch
-def organise_weather_data(working_data):
+def organise_weather_data(working_data, testing=False):
     # Create an array to hold the data points
     data_points_batch = []
 
@@ -97,18 +97,22 @@ def organise_weather_data(working_data):
         data_points_batch.append(point)
 
     # Write the batch to InfluxDB
-    write_to_influx(data_points_batch)
+    if not testing:
+        write_to_influx(data_points_batch)
+
+    return data_points_batch
 
 
 # Check the payload for errors
-def qualify_data(working_data):
+def qualify_data(working_data, testing=False):
     # Check for API throttle error
     if working_data.get('message') == 'Message throttled out':
         ic("PAYLOAD_ERROR: API throttle error")
         ic(working_data)
         sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
         ic(f"API_BACKOFF: Sleeping for {sleep_time} seconds")
-        time.sleep(sleep_time)
+        if not testing:
+            time.sleep(sleep_time)
         return False
     
     # Check for valid weather data

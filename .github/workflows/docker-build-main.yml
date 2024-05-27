@@ -19,6 +19,14 @@ jobs:
     - name: Checkout the code
       uses: actions/checkout@v4
 
+    - name: Unit Tests 
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"  
+    - run: |
+        pip install -r requirements.txt
+        pytest
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
 
