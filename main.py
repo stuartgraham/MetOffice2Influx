@@ -14,7 +14,7 @@ from urllib3 import Retry
 # GLOBALS
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
-INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", ""))
+INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", 8086))
 INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
 INFLUX_TOKEN = os.environ.get("INFLUX_TOKEN", "")
 INFLUX_ORG = os.environ.get("INFLUX_ORG", "-")
