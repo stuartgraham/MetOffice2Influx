@@ -1,7 +1,7 @@
 [![Docker build](https://github.com/stuartgraham/MetOffice2Influx/actions/workflows/docker-build-main.yml/badge.svg)](https://github.com/stuartgraham/MetOffice2Influx/actions/workflows/docker-build-main.yml)
 
 ## Met Office to Influx 
-Downloads hourly weather data from Met Office DataHub API (https://metoffice.apiconnect.ibmcloud.com/metoffice/production/) based on longitude and latitude and inserts to InfluxDB v2.
+Downloads hourly weather data from Met Office DataHub API (https://datahub.metoffice.gov.uk/) based on longitude and latitude and inserts to InfluxDB v2.
 
 ### Requirements
 ```sh
