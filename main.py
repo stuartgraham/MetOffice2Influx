@@ -112,7 +112,7 @@ def qualify_data(working_data):
         return False
     
     # Check for valid weather data
-    if working_data.get(["features"][0]["properties"]["timeSeries"]) == None:
+    if working_data.get("features", [{}])[0].get("properties", {}).get("timeSeries") is None:
         ic("PAYLOAD_ERROR: No data points found")
         ic(working_data)
         return False
