@@ -12,6 +12,7 @@ from influxdb_client.client.exceptions import InfluxDBError
 from urllib3 import Retry
 
 # GLOBALS
+CRON_MODE = bool(os.environ.get('CORN_MODE', False))
 API_KEY = os.environ.get("API_KEY", "")
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", 8086))
@@ -161,11 +162,13 @@ def do_it():
 
 def main():
     do_it()
-    schedule.every(RUNMINS).minutes.do(do_it)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    if not CRON_MODE:
+        schedule.every(RUNMINS).minutes.do(do_it)
+
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 if __name__ == "__main__":
     main()
