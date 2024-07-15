@@ -13,8 +13,8 @@ from influxdb_client.client.exceptions import InfluxDBError
 from urllib3 import Retry
 
 # GLOBALS
-CRON_MODE = bool(os.environ.get('CORN_MODE', False))
-API_KEY = os.environ.get("API_KEY", "")
+CRON_MODE = bool(os.environ.get("CRON_MODE", False))
+API_KEY = os.environ.get("API_KEY", False)
 INFLUX_HOST = os.environ.get("INFLUX_HOST", "")
 INFLUX_HOST_PORT = int(os.environ.get("INFLUX_HOST_PORT", 8086))
 INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "")
@@ -26,7 +26,7 @@ RUNMINS = int(os.environ.get("RUNMINS", 1))
 
 # Configure Icecream
 def time_format():
-    return f'{pendulum.now("Europe/London").to_datetime_string()} |> '
+    return f"{pendulum.now("Europe/London").to_datetime_string()} |> "
 ic.configureOutput(prefix=time_format)
 
 
@@ -69,7 +69,7 @@ def write_to_influx(data_payload):
         
     data_points = len(data_payload)
     ic(f"SUCCESS: {data_points} data points written to InfluxDB")
-    ic('#'*30)
+    ic("#"*30)
     client.close()
 
 
@@ -108,7 +108,7 @@ def organise_weather_data(working_data, testing=False):
 # Check the payload for errors
 def qualify_data(working_data, testing=False):
     # Check for API throttle error
-    if working_data.get('message') == 'Message throttled out':
+    if working_data.get("message") == "Message throttled out":
         ic("PAYLOAD_ERROR: API throttle error")
         ic(working_data)
         sleep_time = calculate_sleep_time(working_data["nextAccessTime"])
