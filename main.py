@@ -1,5 +1,6 @@
 
 import os
+import sys
 import time
 import requests
 import schedule
@@ -161,9 +162,20 @@ def do_it():
 
 
 def main():
-    do_it()
+    # Cron mode runs once and signals an exit code
+    if CRON_MODE:
+        try:
+            print("STARTJOB: Starting job...")
+            do_it()
+            print("COMPLTEDJOB: Job completed successfully")
+            sys.exit(0)
+        except Exception as e:
+            print(f"EXCEPTION: Job failed with exception: {e}")
+            sys.exit(1)
 
-    if not CRON_MODE:
+    # Else operate as long running
+    else:
+        do_it()
         schedule.every(RUNMINS).minutes.do(do_it)
 
         while True:
