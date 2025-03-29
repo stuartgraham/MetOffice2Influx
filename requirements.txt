@@ -1,6 +1,6 @@
 schedule==1.2.*
-influxdb-client==1.43.*
+influxdb-client==1.48.*
 requests==2.32.*
 icecream==2.1.*
 pendulum==3.0.*
-pytest==8.2.*
+pytest==8.3.*
